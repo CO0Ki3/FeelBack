@@ -1,0 +1,61 @@
+/*
+  아두이노를 이용하여 실내의 온습도값을 받아와
+  핸드폰의 블루투스와 연동하는 소스
+*/
+
+#include <SoftwareSerial.h>//블루투스 제어 헤더파일
+#include <DHT11.h>//DHT11헤더파일
+
+int temp = 10;//temp(온습도센서)를 10번 포트에서 사용
+SoftwareSerial bt(3, 4);//bt(블루투스) 핀 지정, trigPin = 3, 받아오는 핀 = 4
+DHT11 dht11(temp);//temp변수를 DHT11에 따라 온 습도 센서임을 정의
+
+void setup()
+{
+  Serial.begin(9600);//9600포트에 시리얼 모니터 사용 선언
+  bt.begin(9600);//9600포트에 블루투스 사용 선언
+  pinMode(temp, OUTPUT);//temp에서 전류 출력
+}
+
+void loop()
+{
+  int err;//int 값의 err선언
+  float temp, humi;//float형의 temp(온도), humi(습도)선언(소수)
+  if ((err = dht11.read(temp, humi)) == 0)//만약 err이 온습도센서에서 temp값과 humi값을 받아왔으면
+  {
+    Serial.print("T: ");//시리얼 모니터에 온도 출력을 나타내기 위한 준비랄까?
+    Serial.print(temp);//받아온 온도의 직접적 값 출력
+    Serial.print(",");//,프린트
+    Serial.print(" H: ");//시리얼 모니터에 습도 출력를 나타내기 위헤 준비랄까?
+    Serial.print(humi);//받아온 습도의 직접적 값 출력
+    Serial.print("%");//%프린트
+    Serial.println();//줄바굼
+    bt.print("T: ");//블루투스 페어링이 된 기기에 온도 출력을 위한 준비랄까?
+    bt.print(temp);//받아온 온도의 직접적 값 출력
+    bt.print(",");//,프린트
+    bt.print(" H: ");//블루투스 페어링이 된 기기에 습도 츨력을 위한 준비랄까?
+    bt.print(humi);//받아온 습도의 직접적 값 출력
+    bt.print("%");//%프린트
+    bt.println();//줄바꿈
+
+    //아직 이 부분을 사용헌 가눙은 없지만 나중에 보일러등의 난방기구를 연동해서
+    //예를 들어 추우면 히터나 보일러 등을 틀어 실내온도를 조정하는 등의 기능을 추가할 것 이다.
+
+    /***********************************************************************
+     Serial.print(시리얼 모니터 프린트)의 값과 bt.print(블루투스 프린트)은 같다.
+    ***********************************************************************/
+
+  }
+  else//((err=dht11.read(temp, humi))==0)의 조건을 충족하지 못하였을때, 즉 값을 받아오지 못햇다면
+  {
+    Serial.println();//줄바꿈(시리얼 모니터에서)
+    Serial.print(":(");//:(출력(이모티콘이지 별 뜻을 지닌것은 아니다)
+    Serial.print(err);//err값 출력(메모리에 있는 쓰레기 값 아무거나 던져줌)
+    Serial.println();//줄바꿈(시리얼 모니터에서)
+    bt.println();//줄바꿈(블루투스 모니터에서)
+    bt.print(":(");//:(출력(이모티콘이지 별 뜻을 지닌것은 아니다)
+    bt.print(err);//err값 출력(메모리에 있는 쓰레기 값 아무거나 던져줌)
+    bt.println();//줄바꿈(블루투스 모니터에서)
+  }
+  delay(DHT11_RETRY_DELAY);//DHT11 헤더파일이 delay값을 조절해준다.
+}

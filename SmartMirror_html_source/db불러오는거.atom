@@ -1,0 +1,38 @@
+<?php
+ header('Access-Control-Allow-Origin:*');
+
+ $feeling = file_get_contents('feeling.db');
+
+ $h = $_GET['h'] / 100;
+ $t = $_GET['t'];
+ $bValue = ((9/5)*$t) - (0.55*(1-$h)*(((9/5)*$t) - 26)) + 32;
+
+ $db = json_decode(file_get_contents('feel.db'));
+
+ $feel_en = array('happy', 'vgood', 'milk', 'fuck', 'enjoying', 'sad', 'hr', 'mad');
+
+ $i = 0;
+ foreach ($feel_en as $value) {
+  if ($feeling == $value) {
+   break;
+  }
+  $i++;
+ }
+
+ $index = $i;
+
+ if ($bValue <= 67) {
+  $comment = $db[$index][0][rand(0, count($value[0]) - 1)];
+ }
+ if ($bValue <= 74) {
+  $comment = $db[$index][1][rand(0, count($value[1]) - 1)];
+ }
+ if ($bValue <= 79) {
+  $comment = $db[$index][2][rand(0, count($value[2]) - 1)];
+ }
+ if ($bValue <= 100) {
+  $comment = $db[$index][3][rand(0, count($value[3]) - 1)];
+ }
+
+ file_put_contents('comment.txt', $comment);
+?>
